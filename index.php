@@ -14,7 +14,7 @@ try {
 	echo "3. Login" . PHP_EOL;
 	echo "4. Change password" . PHP_EOL;
 	echo "-----------------------" . PHP_EOL;
-	$chosenAction = readline("Please choose: ");
+	$chosenAction = readline("Please type the number you want action (1,2,3,4): ");
 
 	$chosenAction = (int)$chosenAction;
 	if($chosenAction < 1 || $chosenAction > 4) die("Your chosen action not exist" . PHP_EOL); 
