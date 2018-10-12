@@ -7,7 +7,10 @@ try {
 	$passwordManager = new PasswordManager();
 
 	// Create user
-	$isCreateSuccess = $passwordManager->createUser('PhuSanh', 'thisIspassword123@');
+	echo "----- Create user -----" . PHP_EOL;
+	$username = readline("Username: ");
+	$password = readline("Password: ");
+	$isCreateSuccess = $passwordManager->createUser($username, $password);
 	if($isCreateSuccess) {
 		echo 'Create new user successfully. User info is stored in password.txt file.' . PHP_EOL;
 	} else {
@@ -15,7 +18,9 @@ try {
 	}
 
 	// Verify (Login)
-	$isLoginSuccess = $passwordManager->login('thisIspassword123@');
+	echo "----- Login with user " . $username . " -----" . PHP_EOL;
+	$loginPassword = readline("Password: ");
+	$isLoginSuccess = $passwordManager->login($loginPassword);
 	if($isLoginSuccess) {
 		echo 'Login successfully' . PHP_EOL;
 	} else {
@@ -23,7 +28,9 @@ try {
 	}
 
 	// Change password
-	$isChangePasswordSuccess = $passwordManager->setNewPassword('456#$newPassword');
+	echo "----- Change password -----" . PHP_EOL;
+	$newPassword = readline("New password: ");
+	$isChangePasswordSuccess = $passwordManager->setNewPassword($newPassword);
 	if($isChangePasswordSuccess) {
 		echo 'Change new password successfully. New user info is stored in password.txt file.' . PHP_EOL;
 	} else {
@@ -31,5 +38,5 @@ try {
 	}
 
 } catch(\Exception $e) {
-	die('Exit with error: ' . $e->getMessage() . PHP_EOL);
+	die ('Exit with error: ' . $e->getMessage() . PHP_EOL);
 }
