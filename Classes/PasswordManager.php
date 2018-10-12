@@ -4,6 +4,7 @@ class PasswordManager {
 
 	public $username;
 	public $hashPassword;
+	public $userLine;
 
 	/**
 	* Create user with username and password
@@ -51,8 +52,31 @@ class PasswordManager {
 	/**
 	* Login: verify password
 	**/
-	public function login($password) {
-		return $this->verifyPassword($password);
+	public function login($username, $password) {
+		$path = "password.txt";
+		if(!file_exists($path)) {
+			throw new \Exception("File not found. Don't have user");
+		}
+
+		$file = fopen($path, "r") or die("Can't open file");
+
+		$this->username = $username;
+		$this->hashPassword = trim($this->encrypt($password));
+
+		$index = 0;
+		while (!feof($file)) {
+			$line = fgets($file);
+			if(!isset($line) || empty($line)) continue;
+
+			$info = explode(" ", $line);
+			
+			if(($this->username === $info[0]) && (trim($info[1]) === $this->hashPassword)) {
+				$this->userLine = $index;
+				return true;
+			}
+			$index++;
+		}
+		return false;
 	}
 
 	/**
@@ -66,26 +90,41 @@ class PasswordManager {
 		}
 
 		$this->hashPassword = $this->encrypt($password);
-		$this->storeInfo();
+		$this->storeInfo($this->userLine);
 		return true;
-
 	}
 
 	/**
 	* Store username and password in file password.txt
 	**/
-	protected function storeInfo() {
+	protected function storeInfo($line = null) {
 		if(empty($this->username)) {
-			throw new \Exception('Username is required', -1);
+			throw new \Exception("Username is required", -1);
 		}
 
 		if(empty($this->hashPassword)) {
-			throw new \Exception('Hash password is required', -1);
+			throw new \Exception("Hash password is required", -1);
 		}
 
-		$file = fopen('password.txt', 'w') or die('Can\'t not create file');
-		fwrite($file, 'username: ' . $this->username . ' - password: ' . $this->hashPassword);
-		fclose($file);
+		$content = $this->username . " " . $this->hashPassword . "\n";
+		$fileName = "password.txt";
+		if($line !== null) {
+			$fileContent = file($fileName);
+			$count = count($fileContent);
+			$file = fopen($fileName, "w+") or die("Can't not create file");
+			$fileContent[$line] = $content;
+			$y = 0;
+			while ($y < $count) {
+				fwrite($file, $fileContent[$y]);
+				$y++;
+			}
+			fclose($file);
+		} else {
+			$file = fopen($fileName, "a+") or die("Can't not create file");
+
+			fwrite($file, $content);
+			fclose($file);
+		}
 	}
 
 }
